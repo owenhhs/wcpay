@@ -1,0 +1,78 @@
+# WordPress
+.htaccess
+wp-config.php
+wp-config-sample.php
+
+# WooCommerce
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# OS
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Node modules (if any)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build files
+*.min.js
+*.min.css
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# PHP
+composer.lock
+vendor/
+
+# Test files
+phpunit.xml
+tests/
+*.test.php
+
+# Debug files
+debug.log
+error_log
+
+# Package files
+*.zip
+*.tar.gz
+*.rar
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# WordPress specific
+sitemap.xml
+sitemap.xml.gz
+
+# Logs
+logs/
+*.log
+
