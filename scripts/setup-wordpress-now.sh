@@ -101,6 +101,14 @@ fi
 # 步骤5: 配置Nginx（如果还没有）
 echo ""
 echo "[5/5] 检查Nginx配置..."
+
+# 确保Nginx目录存在
+if [ ! -d /etc/nginx/sites-available ]; then
+    echo "  创建Nginx配置目录..."
+    $SUDO mkdir -p /etc/nginx/sites-available
+    $SUDO mkdir -p /etc/nginx/sites-enabled
+fi
+
 if [ ! -f /etc/nginx/sites-enabled/wordpress ]; then
     echo "  配置Nginx..."
     
@@ -110,7 +118,26 @@ if [ ! -f /etc/nginx/sites-enabled/wordpress ]; then
         PHP_SOCK="unix:$PHP_SOCK"
     fi
     
-    $SUDO tee /etc/nginx/sites-available/wordpress > /dev/null << EOF
+    # 创建配置文件
+    $SUDO bash -c "cat > /etc/nginx/sites-available/wordpress << 'NGINXEOF'
+server {
+    listen 80;
+    server_name _;
+    root /var/www/wordpress;
+    index index.php index.html;
+
+    location / {
+        try_files \$uri \$uri/ /index.php?\$args;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass $PHP_SOCK;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+NGINXEOF"
 server {
     listen 80;
     server_name _;
