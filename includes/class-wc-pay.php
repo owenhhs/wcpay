@@ -72,6 +72,13 @@ class WC_pay {
         include_once dirname( __FILE__ ) . '/class-wc-pay-xml.php';
         include_once dirname( __FILE__ ) . '/class-wc-pay-api.php';
         include_once dirname( __FILE__ ) . '/class-wc-pay-gateway.php';
+        
+        // Include payment channels
+        include_once dirname( __FILE__ ) . '/channels/abstract-wc-payment-channel.php';
+        include_once dirname( __FILE__ ) . '/channels/class-wc-pix-channel.php';
+        
+        // Include PIX gateway
+        include_once dirname( __FILE__ ) . '/class-wc-pix-gateway.php';
     }
 
     /**
@@ -83,6 +90,7 @@ class WC_pay {
      */
     public static function add_gateway( $methods ) {
         $methods[] = 'WC_pay_Gateway';
+        $methods[] = 'WC_PIX_Gateway';
 
         return $methods;
     }

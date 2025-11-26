@@ -1,0 +1,42 @@
+========================================
+OrbStack环境快速开始
+========================================
+
+步骤1: 进入OrbStack Ubuntu环境
+   orbstack shell ubuntu
+
+步骤2: 复制项目文件（选择一种方式）
+   
+   方式A - 如果项目在Mac上，通过共享文件夹：
+      cd /mnt/Users/michael/Desktop/woocommerce-pay-20251122
+      # 或
+      cd /host/Users/michael/Desktop/woocommerce-pay-20251122
+   
+   方式B - 使用git克隆：
+      cd ~
+      git clone <your-repo-url>
+      cd woocommerce-pay-20251122
+   
+   方式C - 从Mac通过SCP复制（需要配置端口）
+
+步骤3: 运行环境设置
+   sudo bash scripts/setup-orbstack.sh
+
+步骤4: 安装WooCommerce
+   sudo bash scripts/install-woocommerce.sh
+
+步骤5: 部署插件
+   sudo bash scripts/deploy-plugin.sh
+
+步骤6: 访问WordPress
+   获取IP: hostname -I
+   访问: http://[IP地址]
+   完成安装向导
+
+步骤7: 配置PIX支付
+   进入: WooCommerce > 设置 > 支付 > PIX Payment
+   填写API凭证并启用
+
+详细文档: scripts/orbstack-guide.md
+调试清单: scripts/debug-checklist.md
+========================================

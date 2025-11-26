@@ -1,0 +1,22 @@
+========================================
+🚀 快速开始 - 复制这些命令
+========================================
+
+步骤1: 打开OrbStack应用，启动Ubuntu实例
+
+步骤2: 在Ubuntu终端中运行：
+
+cd /mnt/Users/michael/Desktop/woocommerce-pay-20251122 2>/dev/null || \
+cd /host/Users/michael/Desktop/woocommerce-pay-20251122 2>/dev/null || \
+(cd ~ && git clone https://github.com/owenhhs/wcpay.git && cd wcpay)
+
+chmod +x scripts/*.sh
+bash scripts/assist-test.sh
+
+步骤3: 在菜单中选择
+  - 首次运行: 输入 2 (设置环境)
+  - 然后: 输入 3 (运行测试)
+
+========================================
+查看完整指引: cat COPY_AND_RUN.md
+========================================
