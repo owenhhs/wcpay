@@ -19,16 +19,39 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # 检查docker-compose
+COMPOSE_CMD=""
 if docker compose version &> /dev/null 2>/dev/null; then
     COMPOSE_CMD="docker compose"
+    echo "✓ 使用 docker compose (V2)"
 elif command -v docker-compose &> /dev/null; then
     COMPOSE_CMD="docker-compose"
+    echo "✓ 使用 docker-compose (V1)"
 else
     echo "✗ docker-compose未安装"
     echo ""
-    echo "请先安装docker-compose："
-    echo "  cd ~/wcpay && bash docker/install-docker-orbstack.sh"
-    exit 1
+    echo "正在尝试安装..."
+    
+    # 尝试自动安装
+    if bash "$SCRIPT_DIR/check-docker-compose.sh"; then
+        # 重新检查
+        if docker compose version &> /dev/null 2>/dev/null; then
+            COMPOSE_CMD="docker compose"
+        elif command -v docker-compose &> /dev/null; then
+            COMPOSE_CMD="docker-compose"
+        else
+            echo "✗ 自动安装失败，请手动安装"
+            echo ""
+            echo "运行安装脚本："
+            echo "  bash docker/check-docker-compose.sh"
+            exit 1
+        fi
+    else
+        echo "✗ 安装失败"
+        echo ""
+        echo "请手动安装docker-compose："
+        echo "  bash docker/check-docker-compose.sh"
+        exit 1
+    fi
 fi
 
 # 切换到项目目录

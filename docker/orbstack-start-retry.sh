@@ -21,13 +21,28 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # 检查docker-compose
+COMPOSE_CMD=""
 if docker compose version &> /dev/null 2>/dev/null; then
     COMPOSE_CMD="docker compose"
 elif command -v docker-compose &> /dev/null; then
     COMPOSE_CMD="docker-compose"
 else
     echo "✗ docker-compose未安装"
-    exit 1
+    echo "正在尝试安装..."
+    
+    if bash "$SCRIPT_DIR/check-docker-compose.sh"; then
+        if docker compose version &> /dev/null 2>/dev/null; then
+            COMPOSE_CMD="docker compose"
+        elif command -v docker-compose &> /dev/null; then
+            COMPOSE_CMD="docker-compose"
+        else
+            echo "✗ 安装失败，请手动安装: bash docker/check-docker-compose.sh"
+            exit 1
+        fi
+    else
+        echo "✗ 安装失败"
+        exit 1
+    fi
 fi
 
 # 检查是否需要sudo
