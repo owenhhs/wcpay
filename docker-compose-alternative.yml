@@ -1,0 +1,56 @@
+version: '3.8'
+
+# 使用MariaDB替代MySQL的配置（镜像更小，拉取更快）
+
+services:
+  wordpress:
+    image: wordpress:latest
+    container_name: wp-dev-wordpress
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppass123
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_TABLE_PREFIX: wp_
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./:/var/www/html/wp-content/plugins/woocommerce-pay:ro
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+      - db
+    networks:
+      - wp-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  db:
+    image: mariadb:latest
+    container_name: wp-dev-db
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3306:3306"
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppass123
+      MYSQL_ROOT_PASSWORD: rootpass123
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wp-network
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  wordpress_data:
+    driver: local
+  db_data:
+    driver: local
+
+networks:
+  wp-network:
+    driver: bridge
+

@@ -97,7 +97,25 @@ fi
 # MySQL镜像
 if ! pull_image_with_retry "mysql:8.0"; then
     echo ""
-    echo "⚠️  MySQL镜像拉取失败，但继续尝试..."
+    echo "⚠️  MySQL镜像拉取失败"
+    echo "尝试使用MariaDB（兼容MySQL，镜像更小）..."
+    
+    if pull_image_with_retry "mariadb:latest"; then
+        echo ""
+        echo "✓ 使用MariaDB替代MySQL"
+        COMPOSE_FILE="docker-compose-alternative.yml"
+        if [ ! -f "$COMPOSE_FILE" ]; then
+            echo "  ⚠️  替代配置文件不存在，尝试继续使用原配置..."
+            COMPOSE_FILE="docker-compose-simple.yml"
+        fi
+    else
+        echo ""
+        echo "✗ 数据库镜像拉取失败"
+        echo ""
+        echo "请手动拉取镜像或使用镜像加速器："
+        echo "  bash docker/pull-images-with-retry.sh"
+        exit 1
+    fi
 fi
 
 # phpMyAdmin镜像（仅完整版配置需要）
