@@ -64,11 +64,24 @@ echo "✓ Docker服务运行中"
 echo ""
 
 echo "[3/4] 启动Docker容器..."
-$DOCKER_SUDO $COMPOSE_CMD up -d
 
-if [ $? -ne 0 ]; then
-    echo "✗ 容器启动失败"
-    exit 1
+# 尝试使用完整配置
+if $DOCKER_SUDO $COMPOSE_CMD up -d 2>&1 | grep -q "timeout\|TLS handshake\|failed to resolve"; then
+    echo "  ⚠️  镜像拉取超时，尝试使用简化版配置..."
+    
+    if [ -f "docker-compose-simple.yml" ]; then
+        echo "  使用简化版配置（不包含phpMyAdmin）..."
+        COMPOSE_FILE="docker-compose-simple.yml"
+        $DOCKER_SUDO $COMPOSE_CMD -f "$COMPOSE_FILE" up -d
+    else
+        echo "  ✗ 容器启动失败，且简化版配置不存在"
+        echo ""
+        echo "请运行修复脚本："
+        echo "  bash docker/fix-docker-network.sh"
+        exit 1
+    fi
+else
+    echo "  ✓ 容器启动成功"
 fi
 
 echo ""
