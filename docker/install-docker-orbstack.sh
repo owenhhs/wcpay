@@ -14,12 +14,19 @@ if [ "$EUID" -ne 0 ]; then
     SUDO="sudo"
 fi
 
-# 检查是否已经在OrbStack中
-if ! grep -q "OrbStack" /etc/os-release 2>/dev/null && [ ! -f /opt/orbstack ]; then
-    echo "⚠️  这看起来不是在OrbStack环境中"
-    echo "但会继续安装Docker..."
-    echo ""
+# 检查运行环境
+echo "检查运行环境..."
+if [ -d "/run/orbstack" ] || [ -f "/opt/orbstack" ] || grep -qi "orbstack" /etc/hostname 2>/dev/null; then
+    echo "✓ 检测到OrbStack环境"
+elif [ -f /.dockerenv ]; then
+    echo "⚠️  在Docker容器中运行（可能是在OrbStack的容器中）"
+elif command -v systemd-detect-virt &> /dev/null && systemd-detect-virt | grep -q "oracle"; then
+    echo "✓ 检测到虚拟化环境（可能是OrbStack）"
+else
+    echo "⚠️  无法明确检测OrbStack环境"
+    echo "但会继续安装Docker（适用于任何Ubuntu系统）..."
 fi
+echo ""
 
 # 步骤1: 更新系统
 echo "[1/5] 更新系统包..."
