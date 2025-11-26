@@ -24,7 +24,8 @@ cd "$WP_DIR"
 if ! command -v wp &> /dev/null; then
     echo "安装WP-CLI..."
     cd /tmp
-    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar || {
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar 2>/dev/null || \
+        wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar || {
         echo "下载失败，请检查网络"
         exit 1
     }
@@ -34,6 +35,13 @@ fi
 
 echo "✓ WP-CLI已就绪"
 echo ""
+
+# 先修复数据库连接
+echo "检查数据库连接..."
+if ! mysql -uwpuser -pwppass123 -h localhost wordpress -e "SELECT 1;" >/dev/null 2>&1; then
+    echo "数据库连接失败，尝试修复..."
+    sudo bash "$(dirname "$0")/fix-database.sh" || true
+fi
 
 # 检查是否已安装
 if wp core is-installed --allow-root 2>/dev/null; then
@@ -52,6 +60,15 @@ IP=$(hostname -I | awk '{print $1}' 2>/dev/null || echo "localhost")
 echo "安装WordPress..."
 echo "URL: http://$IP"
 echo ""
+
+# 修复wp-config.php中的重复WP_DEBUG
+if [ -f "wp-config.php" ]; then
+    echo "修复配置文件..."
+    sudo sed -i '/define.*WP_DEBUG/d' wp-config.php
+    if ! grep -q "WP_DEBUG" wp-config.php; then
+        sudo sed -i "/That's all, stop editing!/i\\\ndefine( 'WP_DEBUG', false );" wp-config.php
+    fi
+fi
 
 # 安装WordPress
 sudo wp core install \
@@ -82,4 +99,3 @@ echo "  1. 登录后台更改密码"
 echo "  2. 安装WooCommerce"
 echo "  3. 部署支付插件"
 echo ""
-
